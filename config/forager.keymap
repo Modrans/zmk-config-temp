@@ -1,0 +1,209 @@
+// Copyright (c) 2022 The ZMK Contributors
+// SPDX-License-Identifier: MIT
+
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/bt.h>
+
+#define ZMK_POINTING_DEFAULT_SCRL_VAL 23   // default: 10
+#include <dt-bindings/zmk/pointing.h>
+
+// Home row mods macro
+#define HRML(k1,k2,k3,k4) &ht LGUI k1 &ht LALT k2  &ht LCTRL k3  &ht LSHFT k4
+#define HRMR(k1,k2,k3,k4) &ht RSHFT k1 &ht RCTRL k2  &ht RALT k3  &ht RGUI k4
+
+/ { 
+    behaviors {
+        ht: hold_tap {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "balanced";
+            tapping-term-ms = <220>;
+            quick-tap-ms = <150>;
+            require-prior-idle-ms = <100>;
+            bindings = <&kp>, <&kp>;
+        };
+
+        td_apsem: tap_dance_apos_semi {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <200>;    
+            bindings = <&kp APOS>, <&kp SEMI>;
+        };
+
+//        td_io: tap_dance_i_o {
+//            compatible = "zmk,behavior-tap-dance";
+//            #binding-cells = <0>;
+//            tapping-term-ms = <200>;
+//            bindings = <&kp I>, <&kp O>;
+//        };
+
+    };
+
+    combos {
+        compatible = "zmk,combos";
+        combo_qu {
+            timeout-ms = <50>;
+            key-positions = <0 1>;
+            bindings = <&qu>;
+        };
+
+        combo_you {
+            timeout-ms = <50>;
+            key-positions = <7 8>;
+            bindings = <&you>;
+        };
+
+        combo_capyou {
+            timeout-ms = <50>;
+            key-positions = <6 7 8>;
+            bindings = <&capyou>;
+        };
+        
+//        combo_kpz {
+//            timeout-ms = <50>;
+//            key-positions = <20 21>;
+//            bindings = <&kp Z>;
+//        };
+
+//        combo_cdsft {
+//            timeout-ms = <50>;
+//            key-positions = <22 23>;
+//            bindings = <&sk LSHFT>;
+//        };
+
+    };
+
+    macros {
+        qu: qu {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings
+                = <&macro_tap &kp Q &kp U>
+                ;
+        };
+
+        you: you {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings
+                = <&macro_tap &kp Y &kp O &kp U>
+                ;
+        };
+        
+        capyou: capyou {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings
+                = <&macro_press &kp LSHFT>
+                , <&macro_tap &kp Y>
+                , <&macro_release &kp LSHFT>
+                , <&macro_tap &kp O &kp U>      
+                ;
+        };
+    };    
+
+//    conditional_layers {
+//        compatible = "zmk,conditional-layers";
+//        tri_layer {
+//            if-layers = <1 2>;
+//            then-layer = <3>;
+//        };
+//    };
+
+
+
+    keymap {
+        compatible = "zmk,keymap";
+        base_layer {
+            display-name = "Base";
+            bindings = <
+        //╭──────────┬──────────┬──────────┬──────────┬──────────╮   ╭──────────┬──────────┬──────────┬──────────┬──────────╮
+        //│  REPEAT  │  W       │  F       │  P       │  B       │   │  J       │  L       │  U       │  Y       │  aposemi │
+           &key_repeat &kp W      &kp F      &kp P      &kp B          &kp J      &kp L      &kp U      &kp Y      &td_apsem
+        //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┤
+        //│  A       │  R       │  S       │  T       │  G       │   │  M       │  N       │  E       │  td IO   │  O       │
+            &kp A      &kp R      &kp S      &kp T      &kp G          &kp M      &kp N      &kp E      &kp I     &kp O  
+        //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┤
+        //│  Z       │  X       │  C       │  D       │   V      │   │  N       │  M       │ , <      │ . >      │ / ?      │
+            HRML(Z,     X,         C,         D)        &kp V          &kp K     HRMR(H,      COMMA,      DOT,      FSLH)
+        //╰──────────┴──────────┴──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┴──────────┴──────────╯
+                                            &lt 2 TAB   &kp SPACE     &kp BSPC   &lt 1 DEL
+        //                                 ╰──────────┴──────────╯   ╰──────────┴──────────╯
+            >;
+        };
+
+        numnav_layer {
+            display-name = "NumNav";
+            bindings = <
+        //╭──────────┬──────────┬──────────┬──────────┬──────────╮   ╭──────────┬──────────┬──────────┬──────────┬──────────╮
+        //│  MINUS   │  7       │  8       │  9       │  STAR    │   │  PG_UP   │  HOME    │  UP      │  END     │  PSCRN   │
+            &kp MINUS  &kp N7     &kp N8     &kp N9     &kp STAR       &kp PG_UP  &kp HOME   &kp UP     &kp END    &kp PSCRN 
+        //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┤
+        //│  SEMI    │  4       │  5       │  6       │  EQUAL   │   │  UNDER   |  LEFT    │  DOWN    │  RIGHT   │  INS     │
+            &kp SEMI   &kp N4     &kp N5     &kp N6     &kp EQUAL      &kp UNDER  &kp LEFT   &kp DOWN   &kp RIGHT   &kp INS
+        //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┤
+        //│  GRAVE   │  1       │  2       │  3       │  BCKSLSH │   │  PG_DN   │  LSHFT   │  ESC     │  DEL     │  LGUI    │
+            &kp GRAVE  &mt LALT N1 &mt LCTRL N2 &mt LSHFT N3  &kp BSLH  &kp PG_DN &kp LSHFT  &kp ESC    &kp DEL    &kp LGUI 
+        //╰──────────┴──────────┴──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┴──────────┴──────────╯
+                                             &kp DOT    &kp N0         &trans     &trans
+        //                                 ╰──────────┴──────────╯   ╰──────────┴──────────╯
+            >;
+        };
+
+        func_layer {
+            display-name = "Func";
+            bindings = <
+        //╭──────────┬──────────┬──────────┬──────────┬──────────╮   ╭──────────┬──────────┬──────────┬──────────┬──────────╮
+        //│ to MOUSE │  F7      │  F8      │  F9      │  F12     │   │          │          │          │          │          │
+            &to 3      &kp F7     &kp F8     &kp F9     &kp F12        &trans     &trans     &trans     &trans     &trans
+        //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┤
+        //│  TILDE   │  F4      │          │  F6      │  F11     │   │  CAPS    │ CAPSWORD │  LBKT    │  RBKT    │ BSLS PIPE│
+            &kp TILDE  &kp F4     &trans     &kp F6     &kp F11        &kp CAPS  &caps_word  &kp LBKT   &kp RBKT   &kp BSLH
+        //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┤
+        //│   LGUI   │  F1      │  F2      │  F3      │  F10     │   │          │          │          │          │          │
+            &kp LGUI &mt LALT F1 &mt LCTRL F2 &mt LSHFT F3 &kp F10       &trans    &trans     &trans     &trans     &trans
+        //╰──────────┴──────────┴──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┴──────────┴──────────╯
+                                             &trans     &trans         &kp ENTER  &trans
+        //                                 ╰──────────┴──────────╯   ╰──────────┴──────────╯
+            >;
+        };
+
+        mouse_layer {
+            display-name = "Mouse";
+            bindings = <
+        //╭──────────┬──────────┬──────────┬──────────┬──────────╮   ╭──────────┬──────────┬──────────┬──────────┬──────────╮
+        //│  MOUSE2  │  BACK    │  FORWARD │  ENTER   │ SCRL_UP  │   │          │  C-A-D   │          │ PROFILE 0│          │
+            &to 4    &kp LA(LEFT) &kp LA(RIGHT) &kp ENTER &msc SCRL_UP &trans   &kp LC(LA(DEL)) &trans &bt BT_SEL 0 &trans
+        //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┤
+        //│  CTL-A   │  MB3     │   MB2    │  MB1     │ SCRL_DWN │   │          │          │          │ PROFILE 1│          │
+           &kp LC(A)   &mkp MB3    &mkp MB2  &mkp MB1   &msc SCRL_DOWN  &trans    &trans     &trans    &bt BT_SEL 1 &trans
+        //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┤
+        //│ ctl-z/gui│ ctl-x/alt│ ctl-c/ctl│ ctl-v/sft│  DEL     │   │          │          │ CLEAR BT │ PROFILE 2│          │
+           &mt LGUI (LC(Z)) &mt LALT (LC(X)) &mt LCTRL (LC(C)) &mt LSHFT (LC(V)) &kp DEL &trans &trans &bt BT_CLR &bt BT_SEL 2 &trans
+        //╰──────────┴──────────┴──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┴──────────┴──────────╯
+                                              &to 0     &kp BSPC        &trans     &trans
+        //                                 ╰──────────┴──────────╯   ╰──────────┴──────────╯
+            >;
+        };
+
+
+        mouse2_layer {
+            display-name = "Mouse2";
+            bindings = <
+        //╭──────────┬──────────┬──────────┬──────────┬──────────╮   ╭──────────┬──────────┬──────────┬──────────┬──────────╮
+        //│  MOUSE   │ CTL-SFT-T│ C-S-TAB  │ CTL-TAB  │  SCRL_UP │   │          │          │          │ PROFILE 0│          │
+            &to 3     &kp LC(LS(T)) &kp LC(LS(TAB)) &kp LC(TAB) &msc SCRL_UP &trans &trans  &trans     &bt BT_SEL 0 &trans
+        //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┤
+        //│   CTL-T  │  CTL-W   │  MB2     │  MB1     │ SCRL_DWN │   │          │          │          │ PROFILE 1│          │
+            &kp LC(T)  &kp LC(W)  &mkp MB2  &mkp MB1   &msc SCRL_DOWN   &trans     &trans     &trans   &bt BT_SEL 1 &trans
+        //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┤
+        //│  LGUI    │   ALT    │   CTRL   │  SHIFT   │   DEL    │   │          │          │ CLEAR BT │ PROFILE 2│          │
+            &kp LGUI   &kp LALT   &kp LCTRL &kp LSHFT   &kp DEL        &trans     &trans     &bt BT_CLR &bt BT_SEL 2 &trans
+        //╰──────────┴──────────┴──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┴──────────┴──────────╯
+                                             &to 0      &kp BSPC        &trans     &trans
+        //                                 ╰──────────┴──────────╯   ╰──────────┴──────────╯
+            >;
+        };
+    };
+};
